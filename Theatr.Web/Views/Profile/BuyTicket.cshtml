@@ -1,0 +1,53 @@
+﻿@model Theatr.Web.Models.PTUSoloViewModel
+
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+<div class="jumbotron">
+
+    <h3>@ViewBag.Message</h3>
+
+    <h1>NeIzumTak</h1>
+    <p class="lead">Вітаю на сторінці придбання квитків</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Performance Name</th>
+                <th scope="col">Date</th>
+                <th scope="col">Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr scope="row">
+                <td>@Model.Performance.Name</td>
+                <td>@Model.Performance.Date</td>
+                <td>@Model.User.Name</td>
+                <td>@Model.User.Surname</td>
+
+                @using (Html.BeginForm("ConfirmBuyTicket", "Profile", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <td>
+                        <input value="@Model.Performance.Id" type="hidden" name="PerfomanceId">
+                        <input value="VIP or Standart" type="text" name="TicketCategory">
+                        <input value="Buy or Brone" type="text" name="TicketState">
+                        <input value="@Model.User.Id" type="hidden" name="UserId">
+
+                        <input type="submit" class="border-0 bg-transparent" value="Купити квиток на виставу" data-bs-dismiss="modal">
+                    </td>
+                }
+
+            </tr>
+
+        </tbody>
+
+    </table>
+    @Html.ActionLink(
+    "Сторінка профілю",
+    "Index",
+    Model.User)
+
+
+</div>

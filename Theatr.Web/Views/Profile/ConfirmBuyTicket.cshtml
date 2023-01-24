@@ -1,0 +1,61 @@
+﻿@model Theatr.Web.Models.PTUSoloViewModel
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+<div class="jumbotron">
+
+    <h1>NeIzumTak</h1>
+    <p class="lead">Сторінка підтвердження</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Назва вистави</th>
+                <th scope="col">Дата</th>
+                <th scope="col">Ім’я покупця</th>
+                <th scope="col">Прізвище</th>
+                <th scope="col">Категорія</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Ціна</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr scope="row">
+                <td>@Model.Performance.Name</td>
+                <td>@Model.Performance.Date</td>
+                <td>@Model.User.Name</td>
+                <td>@Model.User.Surname</td>
+
+                @using (Html.BeginForm("BuyTicketPost", "Profile", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <td>
+                        @Model.Ticket.TicketCategory
+                        <input value="@Model.Ticket.TicketCategory" type="hidden" name="TicketCategory">
+                    </td>
+                    <td>
+                        @Model.Ticket.TicketState
+                        <input value="@Model.Ticket.TicketState" type="hidden" name="TicketState">
+                    </td>
+                    <td>
+                        @Model.Ticket.Price
+                        <input value="@Model.Ticket.PerfomanceId" type="hidden" name="PerfomanceId">
+                        <input value="@Model.User.Id" type="hidden" name="UserId">
+
+                    </td>
+                    <td>
+                        <input type="submit" class="border-0 bg-transparent" value="Підтвердити покупку квитка" data-bs-dismiss="modal">
+                    </td>
+                        }
+
+                </tr>
+
+        </tbody>
+
+    </table>
+    @Html.ActionLink(
+    "Сторінка профілю",
+    "Index",
+    Model.User)
+
+
+</div>

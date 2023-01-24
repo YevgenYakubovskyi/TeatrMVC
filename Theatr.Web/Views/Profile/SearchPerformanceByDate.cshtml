@@ -1,0 +1,105 @@
+﻿@model  Theatr.Web.Models.PTUViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+<div class="jumbotron">
+    <h1>NeIzumTak </h1>
+    <p class="lead">Сторінка зі списком вистав театру "NeIzumTak"</p>
+    <p class="lead">@ViewBag.Error</p>
+    @using (Html.BeginForm("SearchPerformanceByName", "Profile", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input value="@Model.User.Id" type="number" class="hidden" name="idUser">
+        <input placeholder="Ім’я вистави" type="text" name="namePerf">
+        <input type="submit" class="link" value="Пошук за іменем">
+    }
+    @using (Html.BeginForm("SearchPerformanceByAuthor", "Profile", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input value="@Model.User.Id" type="number" class="hidden" name="idUser">
+        <input placeholder="Автор" type="text" name="nameAuthor">
+        <input type="submit" class="link" value="Пошук за автором">
+    }
+    @using (Html.BeginForm("SearchPerformanceByDate", "Profile", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input value="@Model.User.Id" type="number" class="hidden" name="idUser">
+        <input value="2023-01-13T19:30" type="datetime-local" name="dateTimeStart">
+        <input value="2023-01-13T19:30" type="datetime-local" name="dateTimeEnd">
+        <input type="submit" class="link" value="Пошук за датою">
+    }
+    <br />
+    @using (Html.BeginForm("AddPerformance", "Profile", FormMethod.Post))
+    {
+        <input value="@Model.User.Id" type="hidden" name="Id">
+        @Html.AntiForgeryToken()
+        <input type="submit" class="link" value="Добавити нову виставу">
+    }
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Performance Name</th>
+                <th scope="col">Date</th>
+                <th scope="col">Genre</th>
+                <th scope="col">Author</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var perf in Model.Performance)
+            {
+                <tr scope="row">
+                    <td>@perf.Name</td>
+                    <td>@perf.Date</td>
+                    <td>
+                        @foreach (var perf1 in perf.Genres)
+                        {
+                            @perf1.Name <br />
+                        }
+                    </td>
+                    <td>
+                        @foreach (var perf1 in perf.Authors)
+                        {
+                            @perf1.Name <br />
+                        }
+                    </td>
+                    <td>
+                        @using (Html.BeginForm("BuyTicket", "Profile", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input value="@perf.Id" type="hidden" name="PerfomanceId">
+                            <input value="@Model.User.Id" type="hidden" name="UserId">
+                            <input type="submit" class="border-0 bg-transparent" value="Купити квиток на виставу" data-bs-dismiss="modal">
+                        }
+                        @using (Html.BeginForm("AddTicket", "Profile", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input value="@perf.Id" type="number" class="hidden" name="PerfomanceId">
+                            <input value="@Model.User.Id" type="number" class="hidden" name="UserId">
+                            <input type="submit" class="border-0 bg-transparent" value="Добавити квиток на виставу" data-bs-dismiss="modal">
+                        }
+                        @using (Html.BeginForm("DeletePerformance", "Profile", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input value="@perf.Id" type="number" class="hidden" name="idPerformance">
+                            <input value="@Model.User.Id" type="number" class="hidden" name="idUser">
+                            <input type="submit" class="border-0 bg-transparent" value="Видалити виставу" data-bs-dismiss="modal">
+                        }
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+
+    </table>
+
+    @Html.ActionLink(
+    "Список придбаних квитків",
+    "TicketList",
+    Model.User)
+
+
+</div>

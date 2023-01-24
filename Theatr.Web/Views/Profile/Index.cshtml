@@ -1,0 +1,17 @@
+﻿@model Theatr.Web.Models.UserViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+<div class="jumbotron">
+
+    <h1>NeIzumTak </h1>
+    <h3>@ViewBag.Message</h3>
+    <p class="lead">Це сторінка вашого профілю театру "NeIzumTak"</p>
+    @Html.ActionLink(
+    "Список придбаних квитків",
+    "TicketList",
+    Model)
+
+</div>

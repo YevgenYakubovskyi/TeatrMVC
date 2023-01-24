@@ -1,0 +1,34 @@
+﻿@model Theatr.Web.Models.UserViewModel
+@{
+    ViewBag.Title = "Вхід";
+}
+<h2>@ViewBag.Title.</h2>
+
+@using (Html.BeginForm("LoginToProfile", "Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class = "control-label col-md-2">Пароль</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Login" class="btn btn-default" />
+            </div>
+        </div>
+
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

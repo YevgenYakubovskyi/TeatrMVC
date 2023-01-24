@@ -1,0 +1,59 @@
+﻿@model Theatr.Web.Models.PTUViewModel
+
+@{
+    ViewBag.Title = "TicketList Page";
+
+}
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+<div class="jumbotron">
+
+    <h1>NeIzumTak</h1>
+    <p class="lead">Сторінка зі списком ваших квитків театру "NeIzumTak"</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Performance</th>
+                <th scope="col">Price</th>
+                <th scope="col">Category</th>
+                <th scope="col">State</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tiket in Model.Tickets)
+            {
+                if (tiket.Price != 0)
+                {
+
+
+                    <tr scope="row">
+                        <td>@tiket.Performance.Name</td>
+                        <td>@tiket.Price</td>
+                        <td>@tiket.TicketCategory</td>
+                        <td>@tiket.TicketState</td>
+                        <td>
+                            @using (Html.BeginForm("SellBronedTicket", "Profile", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input value="@tiket.Id" type="hidden" name="Id">
+                                <input type="submit" class="border-0 bg-transparent" value="Купити заброньований квиток" data-bs-dismiss="modal">
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+
+    </table>
+    @Html.ActionLink(
+    "Список вистав",
+    "PerformanceList",
+    Model.Tickets.FirstOrDefault())
+    <br/>
+    @Html.ActionLink(
+    "Сторінка профілю",
+    "Index",
+    Model.User)
+
+</div>
