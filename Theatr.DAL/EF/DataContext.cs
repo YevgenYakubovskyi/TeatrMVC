@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Net.Sockets;
 using System.Runtime.Remoting.Contexts;
 using Theatr.DAL.Entities;
@@ -7,19 +9,20 @@ using Theatr.DAL.Entities;
 
 namespace Theatr.DAL.EF
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User>
     {
         public DbSet<Author> Authors { get; set; }
         public DbSet<Performance> Performances { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<ClientProfile> ClientProfiles { get; set; }
         public DataContext() : base("Theater")
         {
 
         }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Entity<Performance>().HasMany(s => s.Authors).WithMany(c => c.Perfomances).Map(cs =>
             {
                 cs.MapLeftKey("PerfomenceId");
@@ -36,12 +39,12 @@ namespace Theatr.DAL.EF
             modelBuilder.Entity<Ticket>()
             .HasRequired(s => s.User)
             .WithMany(g => g.Tickets)
-            .HasForeignKey<int>(s => s.UserId);
+            .HasForeignKey(s => s.UserId);
 
             modelBuilder.Entity<Ticket>()
             .HasRequired(s => s.Perfomance)
             .WithMany(g => g.Tickets)
-            .HasForeignKey<int>(s => s.PerfomanceId);
+            .HasForeignKey(s => s.PerfomanceId);
 
             base.OnModelCreating(modelBuilder);
         }

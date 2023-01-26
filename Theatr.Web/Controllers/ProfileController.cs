@@ -1,71 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Theatr.BLL.DTO;
 using Theatr.BLL.Interfaces;
-using Theatr.BLL.Service;
-using Theatr.BLL.Infrastructure;
 using Theatr.Web.Models;
 using AutoMapper;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using static System.Net.Mime.MediaTypeNames;
-using System.Diagnostics;
-using System.Configuration;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 
 namespace Theatr.Web.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
         IAuthorizationService authorizationService;
         IManagePerfomanceService managePerfomanceService;
-        public ProfileController(IAuthorizationService authorizationService, IManagePerfomanceService managePerfomanceService)
+        IUserService userService;
+        public ProfileController(IAuthorizationService authorizationService, IManagePerfomanceService managePerfomanceService, IUserService userService)
         {
             this.authorizationService = authorizationService;
             this.managePerfomanceService = managePerfomanceService;
+            this.userService = userService;
         }
-        public ActionResult Index(UserViewModel user)
-        {
-            var configuration = new MapperConfiguration(cfg => {
-                cfg.CreateMap<UserDTO, UserViewModel>()
-                    .IncludeAllDerived();
-                cfg.CreateMap<TicketDTO, TicketViewModel>();
-            }).CreateMapper();
-            var userC = configuration.Map<UserDTO, UserViewModel>(authorizationService.FindUserById(user.Id));
 
-            ViewBag.Message = "Вітаю, " + userC.Name + " " + userC.Surname;
-            return View(userC);
+        public ProfileController()
+        {
         }
-        public ActionResult PerformanceList(TicketViewModel tickets)
+
+        public ActionResult Index()
+        {
+            var userId = User.Identity.GetUserId();
+            var user = authorizationService.FindUserById(userId);
+            var model = new IndexViewModel
+            {
+                Name = user.Name,
+                Email = user.Email, 
+                Surname = user.Surname,
+            };
+            return View("Index", model);
+        }
+
+        public ActionResult TicketList()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var ptu = new PTUViewModel();
+            try
+            {
+                var cTickets = authorizationService.GetTicketsByUserId(userId);
+
+                ptu.Tickets = cTickets.Select(a => new TicketViewModel
+                {
+                    Id = a.Id,
+                    Price = a.Price,
+                    TicketCategory = a.TicketCategory,
+                    TicketState = a.TicketState,
+                    Performance = new PerformanceViewModel { Name = managePerfomanceService.FindPerfomance(a.PerfomanceId).Name }
+                });
+                ViewBag.HaveTicket = "Yes";
+
+                return View(ptu);
+            }
+            catch
+            {
+                ViewBag.HaveTicket = "No";
+                return View(ptu);
+            }
+        }
+
+        public ActionResult PerformanceList()
         {
             var configuration = configPerformance();
             var ptu = new PTUViewModel();
             ptu.Performance = configuration.Map<
                 IEnumerable<PerformanceDTO>, IEnumerable<PerformanceViewModel>>
-                (managePerfomanceService.GetAll().Where(a => a.Id != 3));
-            ptu.User = new UserViewModel { Id= tickets.UserId };
+                (managePerfomanceService.GetAll());
             return View(ptu);
         }
 
         [HttpPost]
-        public ActionResult SearchPerformanceByName(string namePerf, int idUser)
+        public ActionResult SearchPerformanceByName(string namePerf)
         {
             var configuration = configPerformance();
 
-            var ptu = new PTUViewModel();
-            ptu.User = new UserViewModel { Id = idUser };
+            var ptu = new PTUViewModel();;
             ptu.Performance = configuration.Map<
                 IEnumerable<PerformanceDTO>, IEnumerable<PerformanceViewModel>>
-                (managePerfomanceService.FindByName(namePerf).Where(a => a.Id != 3));
+                (managePerfomanceService.FindByName(namePerf));
             return View(ptu);
         }
         [HttpPost]
-        public ActionResult SearchPerformanceByAuthor(string nameAuthor, int idUser)
+        public ActionResult SearchPerformanceByAuthor(string nameAuthor)
         {
             var ptu = new PTUViewModel();
-            ptu.User = new UserViewModel { Id = idUser };
             try
             {
                 ViewBag.Error = " ";
@@ -73,7 +103,7 @@ namespace Theatr.Web.Controllers
 
                 ptu.Performance = configuration.Map<
                     IEnumerable<PerformanceDTO>, IEnumerable<PerformanceViewModel>>
-                    (managePerfomanceService.FindByAuthorName(nameAuthor).Where(a => a.Id != 3));
+                    (managePerfomanceService.FindByAuthorName(nameAuthor));
 
                 return View(ptu);
             }
@@ -83,23 +113,22 @@ namespace Theatr.Web.Controllers
                 var configuration = configPerformance();
                 ptu.Performance = configuration.Map<
                     IEnumerable<PerformanceDTO>, IEnumerable<PerformanceViewModel>>
-                    (managePerfomanceService.GetAll().Where(a => a.Id != 3));
+                    (managePerfomanceService.GetAll());
                 return View(ptu);
 
             }
             
         }
         [HttpPost]
-        public ActionResult SearchPerformanceByDate(DateTime dateTimeStart, DateTime dateTimeEnd, int idUser)
+        public ActionResult SearchPerformanceByDate(DateTime dateTimeStart, DateTime dateTimeEnd)
         {
 
             var ptu = new PTUViewModel();
-            ptu.User = new UserViewModel { Id = idUser };
             var configuration = configPerformance();
 
             ptu.Performance = configuration.Map<
                 IEnumerable<PerformanceDTO>, IEnumerable<PerformanceViewModel>>
-                (managePerfomanceService.FindByTime(dateTimeStart, dateTimeEnd).Where(a => a.Id != 3));
+                (managePerfomanceService.FindByTime(dateTimeStart, dateTimeEnd));
             return View(ptu);
         }
         public IMapper configPerformance()
@@ -120,42 +149,7 @@ namespace Theatr.Web.Controllers
                 cfg.CreateMap<TicketDTO, TicketViewModel>();
             }).CreateMapper();
         }
-        public ActionResult TicketList(UserViewModel user)
-        {
-            var ptu = new PTUViewModel();
-            try
-            {
-                ptu.User = new UserViewModel { Id = user.Id };
-                var cTickets = authorizationService.GetTicketsByUserId(user.Id).Where(a=>a.PerfomanceId!=3);
-
-                    ptu.Tickets = cTickets.Select(a => new TicketViewModel
-                    {
-                        Id = a.Id,
-                        PerfomanceId = a.PerfomanceId,
-                        Price = a.Price,
-                        TicketCategory = a.TicketCategory,
-                        TicketState = a.TicketState,
-                        UserId = a.UserId,
-                        Performance = new PerformanceViewModel { Name = managePerfomanceService.FindPerfomance(a.PerfomanceId).Name }
-                    });
-
-                return View(ptu);
-            }
-            catch
-            {
-                ptu.User = new UserViewModel { Id = user.Id };
-                var cTickets = authorizationService.GetTicketsByUserId(7);
-                ptu.Tickets = cTickets.Select(a => new TicketViewModel
-                {
-                    Id = a.Id,
-                    PerfomanceId = a.PerfomanceId,
-                    Price = a.Price,
-                    UserId = user.Id,
-                });
-                return View(ptu);
-            }
-        }
-
+       
         [HttpPost]
         public ActionResult SellBronedTicket(TicketViewModel ticket)
         {
@@ -180,6 +174,7 @@ namespace Theatr.Web.Controllers
         {
             try
             {
+                var userId = User.Identity.GetUserId();
                 var ptu = new PTUSoloViewModel();
 
                 var configuration = configPerformance();
@@ -188,7 +183,7 @@ namespace Theatr.Web.Controllers
                     PerformanceDTO, PerformanceViewModel>
                     (managePerfomanceService.FindPerfomance(ticket.PerfomanceId));
                 var configuration1 = configUser();
-                ptu.User = configuration1.Map<UserDTO, UserViewModel>(authorizationService.FindUserById(ticket.UserId));
+                ptu.User = configuration1.Map<UserDTO, UserViewModel>(authorizationService.FindUserById(userId));
                 return View(ptu);
             }
             catch
@@ -204,7 +199,7 @@ namespace Theatr.Web.Controllers
             {
                 if ((ticket.TicketCategory != "VIP") && (ticket.TicketCategory != "Standart"))
                 {
-                    return Content("Читати не вмієте? Коректно дані введіть");
+                    return Content("Будь ласка, коректно дані введіть");
                 }
                 for (int i = 0; i < Count; i++)
                 {
@@ -223,6 +218,8 @@ namespace Theatr.Web.Controllers
         {
             try
             {
+
+                var userId = User.Identity.GetUserId();
                 var ptu = new PTUSoloViewModel();
                 var configuration = configPerformance();
 
@@ -230,8 +227,7 @@ namespace Theatr.Web.Controllers
                     PerformanceDTO, PerformanceViewModel>
                     (managePerfomanceService.FindPerfomance(ticket.PerfomanceId));
                 var configuration1 = configUser();
-                ptu.User = configuration1.Map<UserDTO, UserViewModel>(authorizationService.FindUserById(ticket.UserId));
-                
+                ptu.User = configuration1.Map<UserDTO, UserViewModel>(authorizationService.FindUserById(userId));
                 return View(ptu);
             }
             catch
@@ -252,7 +248,9 @@ namespace Theatr.Web.Controllers
                 {
                     return Content("Читати не вмієте? Коректно дані введіть");
                 }
+
                 var t = managePerfomanceService.FindPerfomance(ticket.PerfomanceId).Tickets.ToList();
+
                 foreach (var t1 in t)
                 {
                     if ((t1.TicketCategory == ticket.TicketCategory) && (t1.TicketState == "Can be sold"))
@@ -264,7 +262,6 @@ namespace Theatr.Web.Controllers
                 var conf = configPerformance();
                 ptu.Performance = conf.Map<PerformanceDTO, PerformanceViewModel>
                 (managePerfomanceService.FindPerfomance(ticket.PerfomanceId));
-
                 var conf2 = new MapperConfiguration(cfg => {
                     cfg.CreateMap<UserDTO, UserViewModel>()
                         .IncludeAllDerived();
@@ -286,8 +283,9 @@ namespace Theatr.Web.Controllers
         {
             try
             {
+
+                var userId = User.Identity.GetUserId();
                 var performanceDTO = managePerfomanceService.FindPerfomance(ticket.PerfomanceId);
-                var cUser = authorizationService.FindUserById(ticket.UserId);
 
                 var tickets = performanceDTO.Tickets.ToList();
                 foreach (var ticket1 in tickets.Where(a => a.TicketCategory.Equals(ticket.TicketCategory)))
@@ -296,15 +294,15 @@ namespace Theatr.Web.Controllers
                     {
                         if(ticket.TicketState == "Buy") { 
                             ticket1.TicketState = "Sold";
-                            ticket1.UserId = cUser.Id;
-                            managePerfomanceService.SellTicket(ticket1, cUser);
+                            ticket1.UserId = userId;
+                            managePerfomanceService.SellTicket(ticket1, userId);
                             return Content("Ви придбали квиток");
                         }
                         else
                         {
                             ticket1.TicketState = "Brone";
-                            ticket1.UserId = cUser.Id;
-                            managePerfomanceService.SellTicket(ticket1, cUser);
+                            ticket1.UserId = userId;
+                            managePerfomanceService.SellTicket(ticket1, userId);
                             return Content("Ви придбали квиток");
                         }
                     }
@@ -316,13 +314,10 @@ namespace Theatr.Web.Controllers
                 return Content("Сталась помилка при спробі купити квиток");
             }
         }
-        [HttpPost]
-        public ActionResult AddPerformance(UserViewModel user)
+        
+        public ActionResult AddPerformance()
         {
-            var configuration1 = configUser();
-            var aUser = configuration1.Map<UserDTO, UserViewModel>(authorizationService.FindUserById(user.Id));
-            var ticket = new TicketViewModel { UserId = aUser.Id};
-            return View(ticket);
+            return View();
         }
         [HttpPost]
         public ActionResult AddPerformancePost(DateTime dateTime, string name, string genres, string authors)
@@ -330,7 +325,7 @@ namespace Theatr.Web.Controllers
             try
             {
                 managePerfomanceService.AddPerformance(name, dateTime, authors, genres);
-                return Content("Ви добавили виставу");
+                return RedirectToAction("PerformanceList");
             }
             catch 
             { 
@@ -338,12 +333,10 @@ namespace Theatr.Web.Controllers
             }
         }
         [HttpPost]
-        public ActionResult DeletePerformance(int idPerformance, int idUser)
+        public ActionResult DeletePerformance(int idPerformance)
         {
             managePerfomanceService.DeletePerformance(idPerformance);
-            var ticket = new TicketViewModel { PerfomanceId = idPerformance, UserId = idUser };
-
-            return RedirectToAction("PerformanceList", ticket);
+            return RedirectToAction("PerformanceList");
         }
 
     }

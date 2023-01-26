@@ -6,8 +6,8 @@ namespace Theatr.BLL.Interfaces
     public interface IAuthorizationService
     {
         UserDTO FindUser(string email);
-        UserDTO FindUserById(int id);
-        IEnumerable<TicketDTO> GetTicketsByUserId(int userId);
+        UserDTO FindUserById(string id);
+        IEnumerable<TicketDTO> GetTicketsByUserId(string userId);
         UserDTO Login(string email, string password);
     }
 }

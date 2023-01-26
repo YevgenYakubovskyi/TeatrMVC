@@ -18,9 +18,9 @@ namespace Theatr.BLL.Service
 {
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly EFUnitOfWork<int> UnitOfWork;
+        private readonly IdentityUnitOfWork UnitOfWork;
 
-        public AuthorizationService(EFUnitOfWork<int> UnitOfWork)
+        public AuthorizationService(IdentityUnitOfWork UnitOfWork)
         {
             this.UnitOfWork = UnitOfWork;
         }
@@ -31,7 +31,7 @@ namespace Theatr.BLL.Service
                     .IncludeAllDerived();
                 cfg.CreateMap<Ticket, TicketDTO>();
             }).CreateMapper();
-            var usersDTO = configuration.Map<IEnumerable<User>, IEnumerable<UserDTO>>(UnitOfWork.Users.Find(ex => ex.Email.Equals(email))).ToList();
+            var usersDTO = configuration.Map<IEnumerable<ClientProfile>, IEnumerable<UserDTO>>(UnitOfWork.ClientProfiles.Find(ex => ex.Email.Equals(email))).ToList();
             if (usersDTO.Count == 0)
                 throw new ValidationException("There is no such User", "");
             UserDTO userDTO = usersDTO[0];
@@ -46,7 +46,7 @@ namespace Theatr.BLL.Service
                     .IncludeAllDerived();
                 cfg.CreateMap<Ticket, TicketDTO>();
             }).CreateMapper();
-            var userasDTO = configuration.Map<IEnumerable<User>, IEnumerable<UserDTO>>(UnitOfWork.Users.Find(ex => ex.Email.Equals(email))).ToList();
+            var userasDTO = configuration.Map<IEnumerable<ClientProfile>, IEnumerable<UserDTO>>(UnitOfWork.ClientProfiles.Find(ex => ex.Email.Equals(email))).ToList();
 
             if (userasDTO.Count == 0)
                 throw new ValidationException("There is no such User", "");
@@ -64,7 +64,7 @@ namespace Theatr.BLL.Service
         }
 
 
-        public IEnumerable<TicketDTO> GetTicketsByUserId(int userId)
+        public IEnumerable<TicketDTO> GetTicketsByUserId(string userId)
         {
             var ticketsDal = UnitOfWork.Tickets.Find(ex => ex.UserId.Equals(userId));
 
@@ -104,14 +104,14 @@ namespace Theatr.BLL.Service
             return performance;
         }
 
-        public UserDTO FindUserById(int id)
+        public UserDTO FindUserById(string id)
         {
             var configuration = new MapperConfiguration(cfg => {
-                cfg.CreateMap<User, UserDTO>()
+                cfg.CreateMap<ClientProfile, UserDTO>()
                     .IncludeAllDerived();
                 cfg.CreateMap<Ticket, TicketDTO>();
             }).CreateMapper();
-            var usersDTO = configuration.Map<IEnumerable<User>, IEnumerable<UserDTO>>(UnitOfWork.Users.Find(ex => ex.Id.Equals(id))).ToList();
+            var usersDTO = configuration.Map<IEnumerable<ClientProfile>, IEnumerable<UserDTO>>(UnitOfWork.ClientProfiles.Find(ex => ex.Id.Equals(id))).ToList();
 
            
             if (usersDTO.Count == 0)

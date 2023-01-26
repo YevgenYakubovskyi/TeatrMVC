@@ -40,6 +40,12 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -52,20 +58,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EF\DataContext.cs" />
+    <Compile Include="Entities\ApplicationRole.cs" />
     <Compile Include="Entities\Genre.cs" />
+    <Compile Include="Entities\ClientProfile.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\Ticket.cs" />
     <Compile Include="Entities\Performance.cs" />
     <Compile Include="Entities\Author.cs" />
+    <Compile Include="Identity\ApplicationRoleManager.cs" />
+    <Compile Include="Identity\ApplicationUserManager.cs" />
+    <Compile Include="Interfaces\IClientManager.cs" />
     <Compile Include="Interfaces\IAuthorRepository.cs" />
     <Compile Include="Interfaces\IGenreRepository.cs" />
+    <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\UserRerository.cs" />
     <Compile Include="Repositories\GenreRepository.cs" />
-    <Compile Include="Repositories\EFUnitOfWork.cs" />
+    <Compile Include="Repositories\IdentityUnitOfWork.cs" />
     <Compile Include="Repositories\GeneralRerository.cs" />
     <Compile Include="Repositories\AuthorRepository.cs" />
+    <Compile Include="Repositories\ClientManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

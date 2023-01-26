@@ -13,9 +13,9 @@ namespace Theatr.BLL.Service
 {
     public class ManagePerfomanceService : IManagePerfomanceService
     {
-        private readonly EFUnitOfWork<int> UnitOfWork;
+        private readonly IdentityUnitOfWork UnitOfWork;
 
-        public ManagePerfomanceService(EFUnitOfWork<int> UnitOfWork)
+        public ManagePerfomanceService(IdentityUnitOfWork UnitOfWork)
         {
             this.UnitOfWork = UnitOfWork;
         }
@@ -45,15 +45,15 @@ namespace Theatr.BLL.Service
             var performance = configuration.Map<Performance, PerformanceDTO>(UnitOfWork.Perfomances.Get(id));
             return performance;
         }
-        public void SellTicket(TicketDTO ticketDTO, UserDTO userDTO)
+        public void SellTicket(TicketDTO ticketDTO, string userId)
         {
             var ticketDal = UnitOfWork.Tickets.Get(ticketDTO.Id);
-            var userDal = UnitOfWork.Users.Get(userDTO.Id);
+            var userDal = UnitOfWork.ClientProfiles.Get(userId);
             ticketDal.TicketState = ticketDTO.TicketState;
             ticketDal.UserId = ticketDTO.UserId;
             userDal.Tickets.Add(ticketDal);
             UnitOfWork.Tickets.Update(ticketDal);
-            UnitOfWork.Users.Update(userDal);
+            UnitOfWork.ClientProfiles.Update(userDal);
             UnitOfWork.Save();
         }
         public void SellBronedTicket(TicketDTO ticketDTO)
@@ -252,7 +252,7 @@ namespace Theatr.BLL.Service
                 Price = ticPrice,
                 TicketCategory = ticCat,
                 TicketState = "Can be sold",
-                UserId = 1,
+                UserId = "c26b6881-277f-430f-9ccb-a81492e5537d",
                 Perfomance = UnitOfWork.Perfomances.Get(idPerformance)
             };
             UnitOfWork.Tickets.Create(ticke);

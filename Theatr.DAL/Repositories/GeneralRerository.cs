@@ -9,9 +9,8 @@ using System.Collections;
 
 namespace Theatr.DAL.Repositories
 {
-    class GeneralRerository<TEntity, TKey> : IRepository<TEntity, TKey>
+    class GeneralRerository<TEntity> : IRepository<TEntity>
         where TEntity : class
-        where TKey : IComparable
     {
         private readonly DataContext db;
         private readonly DbSet<TEntity> entities;
@@ -27,7 +26,7 @@ namespace Theatr.DAL.Repositories
             entities.Add(item);
         }
 
-        public void Delete(TKey id)
+        public void Delete(int id)
         {
             TEntity item = entities.Find(id);
             if (item != null)
@@ -41,7 +40,7 @@ namespace Theatr.DAL.Repositories
             return entities.Where(expression).ToList();
         }
 
-        public TEntity Get(TKey id)
+        public TEntity Get(int id)
         {
             return entities.Find(id);
         }

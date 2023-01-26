@@ -9,9 +9,7 @@ namespace Theatr.Web.Models
 {
     public class PTUViewModel
     {
-
         public IEnumerable<PerformanceViewModel> Performance { get; set; }
-        public UserViewModel User { get; set; }
         public IEnumerable<TicketViewModel> Tickets { get; set; }
     }
 }

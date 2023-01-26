@@ -9,7 +9,7 @@ namespace Theatr.BLL.DTO
         public string TicketCategory { get; set; }
         public float Price { get; set; }
         public string TicketState { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public UserDTO User { get; set; }
     }
 }

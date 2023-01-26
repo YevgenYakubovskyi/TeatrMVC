@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Theatr.DAL.Entities
 {
-    public class User
+    public class User : IdentityUser
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Password { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public virtual ICollection<Ticket> Tickets { get; set; }
+        public virtual ClientProfile ClientProfile { get; set; }
     }
 }

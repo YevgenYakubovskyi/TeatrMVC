@@ -1,4 +1,4 @@
-﻿@model Theatr.Web.Models.UserViewModel
+﻿@model Theatr.Web.Models.IndexViewModel
 @{
     ViewBag.Title = "Home Page";
 }
@@ -7,11 +7,23 @@
 <div class="jumbotron">
 
     <h1>NeIzumTak </h1>
-    <h3>@ViewBag.Message</h3>
+    <h3></h3>
     <p class="lead">Це сторінка вашого профілю театру "NeIzumTak"</p>
+
+
+    <div>
+        <dl class="dl-horizontal">
+            <dt>Name:</dt>
+            <dd>@Model.Name</dd>
+            <dt>Surname:</dt>
+            <dd>@Model.Surname</dd>
+            <dt>E-mail:</dt>
+            <dd>@Model.Email</dd>
+
+        </dl>
+    </div>
     @Html.ActionLink(
     "Список придбаних квитків",
-    "TicketList",
-    Model)
+    "TicketList")
 
 </div>

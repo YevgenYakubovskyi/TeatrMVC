@@ -1,12 +1,13 @@
-﻿@model Theatr.Web.Models.UserViewModel
+﻿@model Theatr.Web.Models.LoginModel
 @{
     ViewBag.Title = "Вхід";
 }
 <h2>@ViewBag.Title.</h2>
 
-@using (Html.BeginForm("LoginToProfile", "Home", FormMethod.Post))
+@using (Html.BeginForm("Login", "Home", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new { @class = "text-danger" })
     <div>
         <div class="form-group">
             @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -15,7 +16,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class = "control-label col-md-2">Пароль</label>
+            <label class="control-label col-md-2">Пароль</label>
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
             </div>

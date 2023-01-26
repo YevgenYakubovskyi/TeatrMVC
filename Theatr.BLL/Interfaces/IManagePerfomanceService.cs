@@ -19,7 +19,7 @@ namespace Theatr.BLL.Interfaces
         IEnumerable<PerformanceDTO> FindByName(string name);
         IEnumerable<PerformanceDTO> FindByGenreName(string genreName);
         IEnumerable<PerformanceDTO> FindByAuthorName(string authorName);
-        void SellTicket(TicketDTO ticketDTO, UserDTO userDTO);
+        void SellTicket(TicketDTO ticketDTO, string userId);
         void SellBronedTicket(TicketDTO ticketDTO);
         TicketDTO GetTicketById(int Id);
     }

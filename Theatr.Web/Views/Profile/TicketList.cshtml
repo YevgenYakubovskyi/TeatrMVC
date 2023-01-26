@@ -21,39 +21,46 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var tiket in Model.Tickets)
+            @if (ViewBag.HaveTicket == "Yes")
             {
-                if (tiket.Price != 0)
-                {
+            foreach (var tiket in Model.Tickets)
+            {
 
 
-                    <tr scope="row">
-                        <td>@tiket.Performance.Name</td>
-                        <td>@tiket.Price</td>
-                        <td>@tiket.TicketCategory</td>
-                        <td>@tiket.TicketState</td>
-                        <td>
-                            @using (Html.BeginForm("SellBronedTicket", "Profile", FormMethod.Post))
-                            {
-                                @Html.AntiForgeryToken()
-                                <input value="@tiket.Id" type="hidden" name="Id">
-                                <input type="submit" class="border-0 bg-transparent" value="Купити заброньований квиток" data-bs-dismiss="modal">
-                            }
-                        </td>
-                    </tr>
-                }
+
+                <tr scope="row">
+                    <td>@tiket.Performance.Name</td>
+                    <td>@tiket.Price</td>
+                    <td>@tiket.TicketCategory</td>
+                    <td>@tiket.TicketState</td>
+                    <td>
+                        @using (Html.BeginForm("SellBronedTicket", "Profile", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input value="@tiket.Id" type="hidden" name="Id">
+                            <input type="submit" class="border-0 bg-transparent" value="Купити заброньований квиток" data-bs-dismiss="modal">
+                        }
+                    </td>
+                </tr>
             }
+            }
+            else
+            {
+            <tr scope="row">
+                <td colspan="5">У вас немає квитків</td>
+
+            </tr>
+            }
+
         </tbody>
 
     </table>
     @Html.ActionLink(
     "Список вистав",
-    "PerformanceList",
-    Model.Tickets.FirstOrDefault())
+    "PerformanceList")
     <br/>
     @Html.ActionLink(
     "Сторінка профілю",
-    "Index",
-    Model.User)
+    "Index")
 
 </div>

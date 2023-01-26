@@ -6,15 +6,14 @@ using System.Linq.Expressions;
 
 namespace Theatr.DAL.Interfaces
 {
-    public interface IRepository<T, TKey>
+    public interface IRepository<T>
         where T : class
-        where TKey : IComparable
     {
         IEnumerable<T> GetAll();
-        T Get(TKey id);
+        T Get(int id);
         IEnumerable<T> Find(Expression<Func<T, Boolean>> expression);
         void Create(T item);
         void Update(T item);
-        void Delete(TKey id);
+        void Delete(int id);
     }
 }

@@ -35,7 +35,8 @@ namespace Theatr.BLL.Infrastructure
             kernal.Bind<IAuthorizationService>().To<AuthorizationService>();
             kernal.Bind<IManagePerfomanceService>().To<ManagePerfomanceService>();
             kernal.Bind<IRegistrationService>().To<RegistrationService>();
-            kernal.Bind<IUnitOfWork<int>>().To<EFUnitOfWork<int>>().WithConstructorArgument(connectionString);
+            kernal.Bind<IUserService>().To<UserService>();
+            kernal.Bind<IUnitOfWork>().To<IdentityUnitOfWork>().WithConstructorArgument(connectionString);
         }
 
     }

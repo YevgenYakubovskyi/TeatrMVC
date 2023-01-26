@@ -23,5 +23,11 @@ namespace Theatr.Web
 
             DependencyResolver.SetResolver(new BLL.Infrastructure.NinjectDependencyResolver("DbConnection"));
         }
+        protected void Application_Error()
+        {
+            Exception ex = Server.GetLastError();
+            Server.ClearError();
+            Response.Redirect("~/Home/Index");
+        }
     }
 }
